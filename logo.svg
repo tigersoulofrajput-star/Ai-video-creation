@@ -1,0 +1,124 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <defs>
+    <linearGradient id="ring" x1="70" y1="60" x2="450" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00E5FF"/>
+      <stop offset="0.45" stop-color="#1769FF"/>
+      <stop offset="1" stop-color="#D946EF"/>
+    </linearGradient>
+
+    <linearGradient id="pGradient" x1="150" y1="120" x2="370" y2="390" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5FFAFF"/>
+      <stop offset="0.45" stop-color="#087BFF"/>
+      <stop offset="1" stop-color="#C026FF"/>
+    </linearGradient>
+
+    <linearGradient id="aiGradient" x1="280" y1="390" x2="420" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00E5FF"/>
+      <stop offset="0.55" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#D946EF"/>
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <!-- Dark circular background -->
+  <circle cx="256" cy="256" r="246" fill="#030712"/>
+
+  <!-- Neon outer glow -->
+  <circle
+    cx="256"
+    cy="256"
+    r="220"
+    stroke="url(#ring)"
+    stroke-width="12"
+    opacity="0.35"
+    filter="url(#softGlow)"
+  />
+
+  <!-- Premium circular border -->
+  <circle
+    cx="256"
+    cy="256"
+    r="220"
+    stroke="url(#ring)"
+    stroke-width="7"
+    filter="url(#glow)"
+  />
+
+  <!-- Main futuristic P -->
+  <path
+    d="M160 330V150
+       C160 132 175 118 193 118
+       H285
+       C342 118 378 151 378 200
+       C378 249 342 282 285 282
+       H216
+       V330
+       C216 352 198 370 176 370
+       C167 370 160 361 160 352
+       V330Z
+
+       M216 168V232
+       H277
+       C302 232 319 219 319 200
+       C319 181 302 168 277 168
+       H216Z"
+    fill="url(#pGradient)"
+  />
+
+  <!-- AI circuit lines -->
+  <path
+    d="M196 202H244L264 185
+       M196 226H236L258 208
+       M196 250H232L253 232"
+    stroke="#5FFAFF"
+    stroke-width="8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    filter="url(#glow)"
+  />
+
+  <!-- Circuit nodes -->
+  <circle cx="190" cy="202" r="8" fill="#5FFAFF"/>
+  <circle cx="190" cy="226" r="8" fill="#5FFAFF"/>
+  <circle cx="190" cy="250" r="8" fill="#5FFAFF"/>
+
+  <!-- PRIME AI text -->
+  <text
+    x="256"
+    y="414"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="47"
+    font-weight="800"
+    letter-spacing="2"
+    fill="white"
+  >
+    PRIME
+  </text>
+
+  <text
+    x="395"
+    y="414"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="47"
+    font-weight="800"
+    letter-spacing="1"
+    fill="url(#aiGradient)"
+  >
+    AI
+  </text>
+
+</svg>
