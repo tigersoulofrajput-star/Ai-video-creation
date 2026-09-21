@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PRIME AI — Create. Imagine. Generate.</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#070914;--card:#101426;--card2:#151a30;--text:#f7f8ff;--muted:#9299b5;--blue:#4f8cff;--purple:#8b5cf6;--pink:#ec4899;--border:rgba(255,255,255,.09);--danger:#ff5577;--success:#37d67a}
+body{font-family:Inter,Arial,sans-serif;background:radial-gradient(circle at 20% 10%,rgba(79,140,255,.16),transparent 30%),radial-gradient(circle at 80% 20%,rgba(139,92,246,.14),transparent 30%),var(--bg);color:var(--text);min-height:100vh}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.container{width:min(1180px,92%);margin:auto}
+.glass{background:rgba(16,20,38,.78);border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.25);backdrop-filter:blur(18px)}
+header{height:72px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;background:rgba(7,9,20,.82);backdrop-filter:blur(20px)}
+.nav{height:100%;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:22px;font-weight:900;letter-spacing:1.5px;background:linear-gradient(90deg,#fff,#7ea9ff,#d18cff);-webkit-background-clip:text;color:transparent}
+.nav-right{display:flex;align-items:center;gap:12px}
+.btn{border:0;border-radius:12px;padding:11px 17px;color:white;background:linear-gradient(135deg,var(--blue),var(--purple));font-weight:700}
+.btn.secondary{background:rgba(255,255,255,.07);border:1px solid var(--border)}
+.btn.danger{background:rgba(255,85,119,.12);border:1px solid rgba(255,85,119,.25);color:#ff8da4}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.hero{padding:100px 0 70px;text-align:center}
+.badge{display:inline-block;padding:7px 12px;border-radius:999px;background:rgba(79,140,255,.1);border:1px solid rgba(79,140,255,.25);color:#9dbdff;font-size:13px;margin-bottom:20px}
+.hero h1{font-size:clamp(44px,8vw,86px);line-height:.95;letter-spacing:-4px}
+.gradient{background:linear-gradient(90deg,#fff,#76a7ff,#bd7cff,#ff79b8);-webkit-background-clip:text;color:transparent}
+.hero p{max-width:680px;margin:25px auto;color:var(--muted);font-size:18px;line-height:1.7}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-bottom:80px}
+.feature{padding:26px;border-radius:20px}
+.feature-icon{font-size:30px;margin-bottom:14px}
+.feature h3{margin-bottom:8px}
+.feature p{color:var(--muted);line-height:1.6}
+.auth-page{min-height:calc(100vh - 72px);display:grid;place-items:center;padding:40px 0}
+.auth-box{width:min(460px,100%);padding:30px;border-radius:24px}
+.auth-box h2{font-size:30px;margin-bottom:8px}
+.auth-box>p{color:var(--muted);margin-bottom:25px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;color:#b8bed3;margin-bottom:7px}
+.field input,.field textarea,.field select{width:100%;padding:13px 14px;border-radius:12px;background:#090d1c;color:white;border:1px solid var(--border);outline:none}
+.field textarea{min-height:130px;resize:vertical}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(79,140,255,.7)}
+.auth-actions{display:grid;gap:10px}
+.switch{text-align:center;color:var(--muted);margin-top:18px;font-size:14px}
+.link{color:#83aaff;cursor:pointer}
+.error{color:#ff829b;font-size:13px;margin:10px 0}
+.success{color:#54e890;font-size:13px;margin:10px 0}
+.dashboard{padding:30px 0 70px}
+.dashboard-grid{display:grid;grid-template-columns:230px 1fr;gap:20px}
+.sidebar{padding:16px;border-radius:20px;height:max-content;position:sticky;top:92px}
+.side-btn{width:100%;border:0;background:transparent;color:#aab1c9;padding:13px;border-radius:11px;text-align:left;margin-bottom:5px}
+.side-btn.active,.side-btn:hover{background:rgba(79,140,255,.12);color:white}
+.content{min-width:0}
+.top-title{display:flex;justify-content:space-between;gap:15px;align-items:center;margin-bottom:20px}
+.top-title h2{font-size:30px}
+.credit-pill{padding:9px 13px;border-radius:999px;background:rgba(55,214,122,.1);border:1px solid rgba(55,214,122,.25);color:#63e99a;font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.create-card{padding:25px;border-radius:20px;transition:.2s}
+.create-card:hover{transform:translateY(-3px);border-color:rgba(79,140,255,.3)}
+.create-card h3{margin:10px 0 8px}
+.create-card p{color:var(--muted);line-height:1.5;margin-bottom:18px}
+.panel{padding:24px;border-radius:20px;margin-bottom:20px}
+.panel h3{margin-bottom:18px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px}
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{border:1px solid var(--border);background:rgba(255,255,255,.04);color:#aeb5cd;padding:9px 14px;border-radius:10px}
+.tab.active{background:rgba(79,140,255,.14);color:white;border-color:rgba(79,140,255,.3)}
+.creation-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}
+.creation{overflow:hidden;border-radius:16px;background:#0a0e1e;border:1px solid var(--border)}
+.media{width:100%;aspect-ratio:16/10;background:#050711;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.media img,.media video{width:100%;height:100%;object-fit:cover}
+.media-placeholder{color:#737b98;font-size:13px}
+.creation-body{padding:15px}
+.creation-body p{color:#aab1c8;font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.meta{font-size:12px;color:#69718d;margin:8px 0}
+.creation-actions{display:flex;gap:8px;margin-top:12px}
+.small-btn{border:1px solid var(--border);background:rgba(255,255,255,.05);color:white;border-radius:9px;padding:8px 11px;font-size:12px}
+.status{display:inline-block;font-size:11px;padding:5px 8px;border-radius:999px}
+.status.completed{background:rgba(55,214,122,.1);color:#59e99a}
+.status.processing{background:rgba(79,140,255,.1);color:#82aaff}
+.status.failed{background:rgba(255,85,119,.1);color:#ff829b}
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.profile-grid{max-width:650px}
+.admin-box{border:1px solid rgba(236,72,153,.18)}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.stat{padding:20px;border-radius:15px;background:rgba(255,255,255,.04);border:1px solid var(--border)}
+.stat strong{display:block;font-size:26px;margin-top:6px}
+.loading{position:fixed;inset:0;background:rgba(4,6,14,.72);z-index:100;display:grid;place-items:center;backdrop-filter:blur(7px)}
+.loader-box{padding:25px 30px;border-radius:18px;text-align:center}
+.spinner{width:34px;height:34px;border:3px solid rgba(255,255,255,.15);border-top-color:#75a5ff;border-radius:50%;animation:spin 1s linear infinite;margin:auto auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.notice{padding:12px 14px;border-radius:12px;background:rgba(79,140,255,.08);border:1px solid rgba(79,140,255,.18);color:#aebce0;font-size:13px;line-height:1.5;margin-bottom:15px}
+footer{border-top:1px solid var(--border);padding:30px 0;color:#6e7691;text-align:center;font-size:13px}
+@media(max-width:800px){.features,.cards,.creation-grid{grid-template-columns:1fr}.dashboard-grid{grid-template-columns:1fr}.sidebar{position:static;display:flex;overflow:auto;gap:5px}.side-btn{min-width:max-content;width:auto;margin:0}.row,.row3{grid-template-columns:1fr}.stat-grid{grid-template-columns:1fr}.hero{padding:70px 0}.hero h1{letter-spacing:-2px}.top-title{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+
+<div id="loading" class="loading hidden">
+  <div class="loader-box glass">
+    <div class="spinner"></div>
+    <div id="loadingText">Please wait...</div>
+  </div>
+</div>
+
+<header>
+  <div class="container nav">
+    <div class="logo">PRIME AI</div>
+    <div class="nav-right">
+      <span id="navCredits" class="credit-pill hidden">0 credits</span>
+      <button id="navLogin" class="btn">Login</button>
+      <button id="navLogout" class="btn secondary hidden">Logout</button>
+    </div>
+  </div>
+</header>
+
+<main id="landing">
+  <section class="hero container">
+    <span class="badge">AI CREATION STUDIO</span>
+    <h1>Create. <span class="gradient">Imagine.</span><br>Generate.</h1>
+    <p>Create AI images and videos with one simple creative workspace. Video generation includes AI-generated audio.</p>
+    <button id="heroStart" class="btn">Get Started</button>
+  </section>
+  <section class="container features">
+    <div class="feature glass">
+      <div class="feature-icon">🎨</div>
+      <h3>AI Images</h3>
+      <p>Turn your ideas into AI-generated images with different visual styles.</p>
+    </div>
+    <div class="feature glass">
+      <div class="feature-icon">🎬</div>
+      <h3>AI Videos</h3>
+      <p>Create 8-second AI videos with Veo and generated audio.</p>
+    </div>
+    <div class="feature glass">
+      <div class="feature-icon">⚡</div>
+      <h3>Simple Credits</h3>
+      <p>Use your PRIME AI credits for generations and track your creations.</p>
+    </div>
+  </section>
+</main>
+
+<section id="authPage" class="auth-page hidden">
+  <div class="auth-box glass">
+    <div id="loginForm">
+      <h2>Welcome back</h2>
+      <p>Sign in to your PRIME AI account.</p>
+      <div id="loginError" class="error"></div>
+      <div class="field"><label>Email</label><input id="loginEmail" type="email" autocomplete="email"></div>
+      <div class="field"><label>Password</label><input id="loginPassword" type="password" autocomplete="current-password"></div>
+      <div class="auth-actions">
+        <button id="loginBtn" class="btn">Sign In</button>
+        <button id="googleBtn" class="btn secondary">Continue with Google</button>
+      </div>
+      <div class="switch">New here? <span id="showSignup" class="link">Create account</span></div>
+    </div>
+
+    <div id="signupForm" class="hidden">
+      <h2>Create account</h2>
+      <p>Start creating with PRIME AI.</p>
+      <div id="signupError" class="error"></div>
+      <div class="field"><label>Name</label><input id="signupName" type="text"></div>
+      <div class="field"><label>Email</label><input id="signupEmail" type="email" autocomplete="email"></div>
+      <div class="field"><label>Password</label><input id="signupPassword" type="password" autocomplete="new-password"></div>
+      <div class="field"><label>Confirm password</label><input id="signupConfirm" type="password" autocomplete="new-password"></div>
+      <div class="auth-actions">
+        <button id="signupBtn" class="btn">Create Account</button>
+        <button id="signupGoogleBtn" class="btn secondary">Continue with Google</button>
+      </div>
+      <div class="switch">Already have an account? <span id="showLogin" class="link">Sign in</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="dashboard" class="dashboard hidden">
+  <div class="container dashboard-grid">
+    <aside class="sidebar glass">
+      <button class="side-btn active" data-page="home">⌂ Home</button>
+      <button class="side-btn" data-page="create">＋ Create</button>
+      <button class="side-btn" data-page="history">▣ My Creations</button>
+      <button class="side-btn" data-page="credits">◈ Credits</button>
+      <button class="side-btn" data-page="profile">◎ Profile</button>
+      <button id="adminNav" class="side-btn hidden" data-page="admin">⚙ Admin</button>
+    </aside>
+
+    <div class="content">
+      <section id="page-home" class="page">
+        <div class="top-title">
+          <div><h2>Dashboard</h2><p style="color:var(--muted);margin-top:5px">Create something amazing.</p></div>
+          <span id="homeCredits" class="credit-pill">0 credits</span>
+        </div>
+        <div class="cards">
+          <div class="create-card glass">
+            <div class="feature-icon">🎨</div>
+            <h3>Generate Image</h3>
+            <p>Describe your idea and create an AI image.</p>
+            <button class="btn" data-goto="create" data-create="image">Create Image</button>
+          </div>
+          <div class="create-card glass">
+            <div class="feature-icon">🎬</div>
+            <h3>Generate Video</h3>
+            <p>Create an 8-second Veo video with generated audio.</p>
+            <button class="btn" data-goto="create" data-create="video">Create Video</button>
+          </div>
+        </div>
+        <div class="panel glass" style="margin-top:20px">
+          <h3>Recent Creations</h3>
+          <div id="recentCreations" class="creation-grid"></div>
+        </div>
+      </section>
+
+      <section id="page-create" class="page hidden">
+        <div class="top-title"><h2>Create</h2><span id="createCredits" class="credit-pill">0 credits</span></div>
+        <div class="tabs">
+          <button class="tab active" data-create-tab="image">Image</button>
+          <button class="tab" data-create-tab="video">Video</button>
+        </div>
+
+        <div id="imageCreator" class="panel glass">
+          <h3>AI Image Generator</h3>
+          <div class="notice">One image generation uses 1 PRIME AI credit.</div>
+          <div class="field"><label>Prompt</label><textarea id="imagePrompt" placeholder="Example: A cinematic mountain village at sunset, detailed, atmospheric..."></textarea></div>
+          <div class="row">
+            <div class="field"><label>Style</label><select id="imageStyle"><option>Realistic</option><option>Cinematic</option><option>Cartoon</option><option>Anime</option><option>Ghibli-style</option><option>Artistic</option><option>3D</option></select></div>
+            <div class="field"><label>Aspect ratio</label><select id="imageRatio"><option value="1:1">1:1</option><option value="16:9">16:9</option><option value="9:16">9:16</option><option value="4:3">4:3</option><option value="3:4">3:4</option></select></div>
+          </div>
+          <button id="generateImageBtn" class="btn">Generate Image</button>
+          <div id="imageResult" style="margin-top:20px"></div>
+        </div>
+
+        <div id="videoCreator" class="panel glass hidden">
+          <h3>AI Video Generator</h3>
+          <div class="notice">Veo 3.1 creates an 8-second video with generated audio. One video generation uses 1 PRIME AI credit.</div>
+          <div class="field"><label>Prompt</label><textarea id="videoPrompt" placeholder="Example: A cinematic drone shot flying over a beautiful forest, realistic movement, natural sounds..."></textarea></div>
+          <div class="row3">
+            <div class="field"><label>Aspect ratio</label><select id="videoRatio"><option value="16:9">16:9</option><option value="9:16">9:16</option></select></div>
+            <div class="field"><label>Duration</label><select disabled><option>8 seconds</option></select></div>
+            <div class="field"><label>Resolution</label><select id="videoResolution"><option value="720p">720p</option><option value="1080p">1080p</option><option value="4k">4K</option></select></div>
+          </div>
+          <button id="generateVideoBtn" class="btn">Generate Video</button>
+          <div id="videoResult" style="margin-top:20px"></div>
+        </div>
+      </section>
+
+      <section id="page-history" class="page hidden">
+        <div class="top-title"><h2>My Creations</h2></div>
+        <div class="tabs">
+          <button class="tab active" data-history-tab="all">All</button>
+          <button class="tab" data-history-tab="image">Images</button>
+          <button class="tab" data-history-tab="video">Videos</button>
+        </div>
+        <div id="historyGrid" class="creation-grid"></div>
+      </section>
+
+      <section id="page-credits" class="page hidden">
+        <div class="top-title"><h2>Credits</h2></div>
+        <div class="panel glass">
+          <div class="stat-grid">
+            <div class="stat"><span style="color:var(--muted)">Available</span><strong id="creditBalance">0</strong></div>
+            <div class="stat"><span style="color:var(--muted)">Lifetime used</span><strong id="creditUsed">0</strong></div>
+            <div class="stat"><span style="color:var(--muted)">Account</span><strong style="font-size:16px" id="creditEmail">—</strong></div>
+          </div>
+        </div>
+        <div class="panel glass">
+          <h3>Plans</h3>
+          <div id="plansList" class="cards"></div>
+        </div>
+      </section>
+
+      <section id="page-profile" class="page hidden">
+        <div class="top-title"><h2>Profile</h2></div>
+        <div class="panel glass profile-grid">
+          <div class="field"><label>Name</label><input id="profileName"></div>
+          <div class="field"><label>Email</label><input id="profileEmail" disabled></div>
+          <button id="saveProfileBtn" class="btn">Save Profile</button>
+          <div id="profileMessage" class="success"></div>
+        </div>
+      </section>
+
+      <section id="page-admin" class="page hidden">
+        <div class="top-title"><h2>Admin Panel</h2></div>
+        <div class="panel glass admin-box">
+          <h3>PRIME AI Administration</h3>
+          <div class="notice">This section is available only to an account registered in the admin_users table.</div>
+          <div class="stat-grid">
+            <div class="stat"><span style="color:var(--muted)">Users</span><strong id="adminUsers">—</strong></div>
+            <div class="stat"><span style="color:var(--muted)">Generations</span><strong id="adminGenerations">—</strong></div>
+            <div class="stat"><span style="color:var(--muted)">Plans</span><strong id="adminPlans">—</strong></div>
+          </div>
+          <div style="margin-top:20px">
+            <button id="refreshAdmin" class="btn secondary">Refresh Admin Data</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</section>
+
+<footer>PRIME AI — Create. Imagine. Generate.</footer>
+
+<script>
+const SUPABASE_URL="https://ddseadecdqoykhxgjmix.supabase.co";
+const SUPABASE_KEY="sb_publishable_Ze5ckg48bz-l7N-aSgid0A_rXRgCdfP";
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const FUNCTIONS={
+  image:`${SUPABASE_URL}/functions/v1/generate-image`,
+  video:`${SUPABASE_URL}/functions/v1/generate-video`,
+  status:`${SUPABASE_URL}/functions/v1/check-video-status`
+};
+
+let currentUser=null;
+let currentCredits=0;
+let currentHistoryTab="all";
+let pollTimers={};
+
+const $=id=>document.getElementById(id);
+
+function showLoading(text="Please wait..."){
+  $("loadingText").textContent=text;
+  $("loading").classList.remove("hidden");
+}
+function hideLoading(){$("loading").classList.add("hidden")}
+function escapeHtml(value){
+  return String(value??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]));
+}
+function formatDate(value){
+  if(!value)return"—";
+  return new Date(value).toLocaleString();
+}
+function setError(id,msg=""){ $(id).textContent=msg||""; }
+function setPage(page){
+  document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+  const target=$("page-"+page);
+  if(target)target.classList.remove("hidden");
+  document.querySelectorAll(".side-btn").forEach(x=>x.classList.toggle("active",x.dataset.page===page));
+  if(page==="history")loadHistory();
+  if(page==="credits"){loadCredits();loadPlans()}
+  if(page==="admin")loadAdmin();
+}
+function showDashboard(){
+  $("landing").classList.add("hidden");
+  $("authPage").classList.add("hidden");
+  $("dashboard").classList.remove("hidden");
+  $("navLogin").classList.add("hidden");
+  $("navLogout").classList.remove("hidden");
+  $("navCredits").classList.remove("hidden");
+  setPage("home");
+}
+function showLanding(){
+  $("landing").classList.remove("hidden");
+  $("authPage").classList.add("hidden");
+  $("dashboard").classList.add("hidden");
+  $("navLogin").classList.remove("hidden");
+  $("navLogout").classList.add("hidden");
+  $("navCredits").classList.add("hidden");
+}
+function showAuth(){
+  $("landing").classList.add("hidden");
+  $("dashboard").classList.add("hidden");
+  $("authPage").classList.remove("hidden");
+  $("navLogin").classList.remove("hidden");
+  $("navLogout").classList.add("hidden");
+}
+async function refreshUser(){
+  const{data}=await supabaseClient.auth.getUser();
+  currentUser=data?.user||null;
+  if(currentUser){
+    await ensureProfile();
+    await loadCredits();
+    await checkAdmin();
+    showDashboard();
+    loadRecent();
+  }else{
+    showLanding();
+  }
+}
+async function ensureProfile(){
+  if(!currentUser)return;
+  const name=currentUser.user_metadata?.name||currentUser.user_metadata?.full_name||"";
+  await supabaseClient.from("profiles").upsert({
+    id:currentUser.id,
+    email:currentUser.email,
+    name:name
+  },{onConflict:"id",ignoreDuplicates:true});
+}
+async function loadCredits(){
+  if(!currentUser)return;
+  const{data,error}=await supabaseClient.from("credits").select("balance,lifetime_used").eq("user_id",currentUser.id).maybeSingle();
+  if(error)return;
+  currentCredits=Number(data?.balance||0);
+  $("navCredits").textContent=`${currentCredits} credits`;
+  $("homeCredits").textContent=`${currentCredits} credits`;
+  $("createCredits").textContent=`${currentCredits} credits`;
+  $("creditBalance").textContent=currentCredits;
+  $("creditUsed").textContent=Number(data?.lifetime_used||0);
+  $("creditEmail").textContent=currentUser.email||"—";
+}
+async function checkAdmin(){
+  if(!currentUser)return;
+  const{data}=await supabaseClient.from("admin_users").select("id").eq("user_id",currentUser.id).maybeSingle();
+  $("adminNav").classList.toggle("hidden",!data);
+}
+async function callFunction(url,payload){
+  const{data:{session}}=await supabaseClient.auth.getSession();
+  if(!session)throw new Error("Please sign in again.");
+  const response=await fetch(url,{
+    method:"POST",
+    headers:{
+      "Authorization":`Bearer ${session.access_token}`,
+      "apikey":SUPABASE_KEY,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify(payload)
+  });
+  let data;
+  try{data=await response.json()}catch{throw new Error("Invalid server response")}
+  if(!response.ok||data?.success===false){
+    throw new Error(data?.error?.message||"Request failed");
+  }
+  return data;
+}
+
+async function generateImage(){
+  const prompt=$("imagePrompt").value.trim();
+  const style=$("imageStyle").value;
+  const aspect_ratio=$("imageRatio").value;
+  if(!prompt){alert("Please enter an image prompt.");return}
+  if(currentCredits<1){alert("You don't have enough credits.");return}
+  showLoading("Generating your image...");
+  $("imageResult").innerHTML="";
+  try{
+    const data=await callFunction(FUNCTIONS.image,{prompt,style,aspect_ratio});
+    if(data.output_url){
+      $("imageResult").innerHTML=`
+      <div class="creation glass">
+        <div class="media"><img src="${escapeHtml(data.output_url)}" alt="Generated image"></div>
+        <div class="creation-body">
+          <p>${escapeHtml(prompt)}</p>
+          <div class="creation-actions">
+            <a class="small-btn" href="${escapeHtml(data.output_url)}" target="_blank" rel="noopener">Open</a>
+            <a class="small-btn" href="${escapeHtml(data.output_url)}" download>Download</a>
+          </div>
+        </div>
+      </div>`;
+    }
+    await loadCredits();
+    await loadRecent();
+  }catch(error){
+    $("imageResult").innerHTML=`<div class="error">${escapeHtml(error.message)}</div>`;
+  }finally{hideLoading()}
+}
+
+async function generateVideo(){
+  const prompt=$("videoPrompt").value.trim();
+  const aspect_ratio=$("videoRatio").value;
+  const resolution=$("videoResolution").value;
+  if(!prompt){alert("Please enter a video prompt.");return}
+  if(currentCredits<1){alert("You don't have enough credits.");return}
+  showLoading("Starting Veo 3.1 video...");
+  $("videoResult").innerHTML="";
+  try{
+    const data=await callFunction(FUNCTIONS.video,{prompt,aspect_ratio,resolution});
+    $("videoResult").innerHTML=`
+      <div class="notice">Video generation started. PRIME AI will check the Google operation automatically.</div>
+      <div class="status processing">Processing</div>`;
+    await loadCredits();
+    if(data.generation_id)startVideoPolling(data.generation_id);
+  }catch(error){
+    $("videoResult").innerHTML=`<div class="error">${escapeHtml(error.message)}</div>`;
+  }finally{hideLoading()}
+}
+
+function startVideoPolling(generationId){
+  if(pollTimers[generationId])clearInterval(pollTimers[generationId]);
+  let attempts=0;
+  const maxAttempts=60;
+  const poll=async()=>{
+    attempts++;
+    try{
+      const data=await callFunction(FUNCTIONS.status,{generation_id:generationId});
+      if(data.status==="completed"&&data.output_url){
+        clearInterval(pollTimers[generationId]);
+        delete pollTimers[generationId];
+        $("videoResult").innerHTML=`
+          <div class="creation glass">
+            <div class="media"><video controls playsinline src="${escapeHtml(data.output_url)}"></video></div>
+            <div class="creation-body">
+              <p>Video generated successfully with Veo 3.1 audio.</p>
+              <div class="creation-actions">
+                <a class="small-btn" href="${escapeHtml(data.output_url)}" target="_blank" rel="noopener">Open</a>
+                <a class="small-btn" href="${escapeHtml(data.output_url)}" download>Download</a>
+              </div>
+            </div>
+          </div>`;
+        await loadCredits();
+        await loadRecent();
+        return;
+      }
+      if(data.status==="failed"){
+        clearInterval(pollTimers[generationId]);
+        delete pollTimers[generationId];
+        $("videoResult").innerHTML=`<div class="error">${escapeHtml(data.error?.message||"Video generation failed.")}</div>`;
+        await loadCredits();
+        return;
+      }
+      if(attempts>=maxAttempts){
+        clearInterval(pollTimers[generationId]);
+        delete pollTimers[generationId];
+        $("videoResult").innerHTML=`<div class="error">The video is taking longer than expected. Check My Creations shortly.</div>`;
+      }
+    }catch(error){
+      if(attempts>=maxAttempts){
+        clearInterval(pollTimers[generationId]);
+        delete pollTimers[generationId];
+        $("videoResult").innerHTML=`<div class="error">${escapeHtml(error.message)}</div>`;
+      }
+    }
+  };
+  poll();
+  pollTimers[generationId]=setInterval(poll,10000);
+}
+
+async function loadHistory(){
+  if(!currentUser)return;
+  let query=supabaseClient.from("generations").select("*").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(50);
+  if(currentHistoryTab!=="all")query=query.eq("generation_type",currentHistoryTab);
+  const{data,error}=await query;
+  if(error){
+    $("historyGrid").innerHTML=`<div class="error">${escapeHtml(error.message)}</div>`;
+    return;
+  }
+  renderCreations($("historyGrid"),data||[]);
+}
+async function loadRecent(){
+  if(!currentUser)return;
+  const{data}=await supabaseClient.from("generations").select("*").eq("user_id",currentUser.id).order("created_at",{ascending:false}).limit(4);
+  renderCreations($("recentCreations"),data||[]);
+}
+function renderCreations(container,items){
+  if(!items.length){
+    container.innerHTML=`<div class="empty">No creations yet.</div>`;
+    return;
+  }
+  container.innerHTML=items.map(item=>{
+    const isVideo=item.generation_type==="video";
+    const status=item.status||"processing";
+    let media=`<div class="media"><div class="media-placeholder">Processing...</div></div>`;
+    if(status==="completed"&&item.output_url){
+      media=isVideo
+        ?`<div class="media"><video controls playsinline src="${escapeHtml(item.output_url)}"></video></div>`
+        :`<div class="media"><img src="${escapeHtml(item.output_url)}" alt="Generated image"></div>`;
+    }
+    return`
+      <article class="creation">
+        ${media}
+        <div class="creation-body">
+          <span class="status ${escapeHtml(status)}">${escapeHtml(status)}</span>
+          <div class="meta">${isVideo?"Video":"Image"} · ${escapeHtml(formatDate(item.created_at))}</div>
+          <p>${escapeHtml(item.prompt||"No prompt")}</p>
+          ${status==="completed"&&item.output_url?`
+          <div class="creation-actions">
+            <a class="small-btn" href="${escapeHtml(item.output_url)}" target="_blank" rel="noopener">Open</a>
+            <a class="small-btn" href="${escapeHtml(item.output_url)}" download>Download</a>
+          </div>`:""}
+        </div>
+      </article>`;
+  }).join("");
+}
+async function loadPlans(){
+  const{data,error}=await supabaseClient.from("plans").select("*").order("price",{ascending:true});
+  if(error||!data?.length){
+    $("plansList").innerHTML=`<div class="empty">Plans will appear here.</div>`;
+    return;
+  }
+  $("plansList").innerHTML=data.map(p=>`
+    <div class="create-card glass">
+      <h3>${escapeHtml(p.name||"Plan")}</h3>
+      <p>${escapeHtml(p.description||"Credit plan")}</p>
+      <strong style="font-size:25px">₹${escapeHtml(p.price||"0")}</strong>
+      <div style="margin-top:12px;color:var(--muted)">${escapeHtml(p.credits||p.credit_amount||"")} credits</div>
+    </div>`).join("");
+}
+async function loadProfile(){
+  if(!currentUser)return;
+  const{data}=await supabaseClient.from("profiles").select("*").eq("id",currentUser.id).maybeSingle();
+  $("profileName").value=data?.name||currentUser.user_metadata?.name||currentUser.user_metadata?.full_name||"";
+  $("profileEmail").value=currentUser.email||"";
+}
+async function saveProfile(){
+  if(!currentUser)return;
+  const name=$("profileName").value.trim();
+  const{error}=await supabaseClient.from("profiles").upsert({id:currentUser.id,email:currentUser.email,name},{onConflict:"id"});
+  $("profileMessage").textContent=error?error.message:"Profile saved successfully.";
+}
+async function loadAdmin(){
+  if(!currentUser)return;
+  const{data:admin}=await supabaseClient.from("admin_users").select("id").eq("user_id",currentUser.id).maybeSingle();
+  if(!admin){setPage("home");return}
+  const[users,generations,plans]=await Promise.all([
+    supabaseClient.from("profiles").select("id",{count:"exact",head:true}),
+    supabaseClient.from("generations").select("id",{count:"exact",head:true}),
+    supabaseClient.from("plans").select("id",{count:"exact",head:true})
+  ]);
+  $("adminUsers").textContent=users.count??"0";
+  $("adminGenerations").textContent=generations.count??"0";
+  $("adminPlans").textContent=plans.count??"0";
+}
+
+document.querySelectorAll(".side-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    if(btn.dataset.page)setPage(btn.dataset.page);
+  });
+});
+document.querySelectorAll("[data-goto]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    setPage(btn.dataset.goto);
+    if(btn.dataset.create){
+      document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+      const target=document.querySelector(`[data-create-tab="${btn.dataset.create}"]`);
+      if(target)target.classList.add("active");
+      $("imageCreator").classList.toggle("hidden",btn.dataset.create!=="image");
+      $("videoCreator").classList.toggle("hidden",btn.dataset.create!=="video");
+    }
+  });
+});
+document.querySelectorAll("[data-create-tab]").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll("[data-create-tab]").forEach(x=>x.classList.remove("active"));
+    tab.classList.add("active");
+    const type=tab.dataset.createTab;
+    $("imageCreator").classList.toggle("hidden",type!=="image");
+    $("videoCreator").classList.toggle("hidden",type!=="video");
+  });
+});
+document.querySelectorAll("[data-history-tab]").forEach(tab=>{
+  tab.addEventListener("click",()=>{
+    document.querySelectorAll("[data-history-tab]").forEach(x=>x.classList.remove("active"));
+    tab.classList.add("active");
+    currentHistoryTab=tab.dataset.historyTab;
+    loadHistory();
+  });
+});
+
+$("navLogin").onclick=showAuth;
+$("heroStart").onclick=showAuth;
+$("showSignup").onclick=()=>{
+  $("loginForm").classList.add("hidden");
+  $("signupForm").classList.remove("hidden");
+};
+$("showLogin").onclick=()=>{
+  $("signupForm").classList.add("hidden");
+  $("loginForm").classList.remove("hidden");
+};
+$("loginBtn").onclick=async()=>{
+  setError("loginError","");
+  const email=$("loginEmail").value.trim();
+  const password=$("loginPassword").value;
+  if(!email||!password){setError("loginError","Enter your email and password.");return}
+  showLoading("Signing in...");
+  const{error}=await supabaseClient.auth.signInWithPassword({email,password});
+  hideLoading();
+  if(error){setError("loginError",error.message);return}
+  await refreshUser();
+};
+$("signupBtn").onclick=async()=>{
+  setError("signupError","");
+  const name=$("signupName").value.trim();
+  const email=$("signupEmail").value.trim();
+  const password=$("signupPassword").value;
+  const confirm=$("signupConfirm").value;
+  if(!name||!email||!password){setError("signupError","Complete all fields.");return}
+  if(password!==confirm){setError("signupError","Passwords do not match.");return}
+  if(password.length<6){setError("signupError","Password must be at least 6 characters.");return}
+  showLoading("Creating account...");
+  const{data,error}=await supabaseClient.auth.signUp({
+    email,
+    password,
+    options:{data:{name}}
+  });
+  hideLoading();
+  if(error){setError("signupError",error.message);return}
+  if(data.session){await refreshUser()}
+  else{setError("signupError","Account created. Check your email if email confirmation is enabled.")}
+};
+async function googleLogin(){
+  const{error}=await supabaseClient.auth.signInWithOAuth({
+    provider:"google",
+    options:{redirectTo:window.location.origin}
+  });
+  if(error)alert(error.message);
+}
+$("googleBtn").onclick=googleLogin;
+$("signupGoogleBtn").onclick=googleLogin;
+$("navLogout").onclick=async()=>{
+  await supabaseClient.auth.signOut();
+  currentUser=null;
+  showLanding();
+};
+$("generateImageBtn").onclick=generateImage;
+$("generateVideoBtn").onclick=generateVideo;
+$("saveProfileBtn").onclick=saveProfile;
+$("refreshAdmin").onclick=loadAdmin;
+
+supabaseClient.auth.onAuthStateChange(async(event,session)=>{
+  currentUser=session?.user||null;
+  if(currentUser){
+    setTimeout(()=>refreshUser(),0);
+  }else{
+    showLanding();
+  }
+});
+
+(async()=>{
+  const{data}=await supabaseClient.auth.getSession();
+  if(data.session)await refreshUser();
+  else showLanding();
+})();
+</script>
+</body>
+        </html>
